@@ -1,0 +1,12 @@
+h5py
+matplotlib
+torch
+opencv-python
+numpy
+Pillow
+dataset
+progressbar2
+train
+boto3
+requests
+tqdm
