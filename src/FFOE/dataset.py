@@ -163,8 +163,6 @@ class GQAFeatureDataset(Dataset):
         self.teacher_logits = []
         print('Create %s entries' % name)
 
-        self.entries = _load_gqa_dataset(dataroot, args, name)
-
         # Filter entries based on the subset_fraction
         if subset_fraction is not None and 0 < subset_fraction < 1:
             num_samples = int(len(self.entries) * subset_fraction)
@@ -180,6 +178,8 @@ class GQAFeatureDataset(Dataset):
             self.features = np.array(hf.get('image_features'))
             self.spatials = np.array(hf.get('spatial_features'))
             self.pos_boxes = np.array(hf.get('pos_boxes'))
+
+        self.entries = _load_gqa_dataset(dataroot, args, name, self.img_id2idx, dictionary.img2id)
 
         self.tokenize(self.question_len)
         self.stat_word_tokenize_1(args.num_stat_word)
