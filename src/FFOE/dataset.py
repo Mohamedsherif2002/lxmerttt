@@ -146,7 +146,7 @@ def _load_gqa_dataset(dataroot, args, name, img_id2val):
     return entries
 
 class GQAFeatureDataset(Dataset):
-    def __init__(self, args, name, dictionary, dataroot='/kaggle/input/lxmert-gqa/gqa/', adaptive=False):
+    def __init__(self, args, name, dictionary, dataroot='/kaggle/input/lxmert-gqa/gqa/', adaptive=False, subset_fraction=None):
         super(GQAFeatureDataset, self).__init__()
         assert name in ['train', 'val', 'test-dev2015', 'test2015', 'test']
 
@@ -163,23 +163,17 @@ class GQAFeatureDataset(Dataset):
         self.teacher_logits = []
         print('Create %s entries' % name)
 
-        # load stat_word
-        self.stat_words = json.load(open('/kaggle/input/lxmert-gqa/gqa/%s_%s_stats_words.json' % (name, args.topk)))
-        self.stat_skip_imgid = json.load(open('/kaggle/input/lxmert-gqa/gqa/%s_%s_stats_skip_imgid.json' % (name, args.topk)))
-        self.stat_features = {}
+        self.entries = _load_gqa_dataset(dataroot, args, name)
 
-        # load attribute word
-        self.attr_words = json.load(open('/kaggle/input/lxmert-gqa/gqa/%s_attr_words_non_plural_words.json' % name))
-        self.attr_skip_imgid = json.load(open('/kaggle/input/lxmert-gqa/gqa/%s_attr_skip_imgid.json' % name))
-        self.skip_imgid = []
-        self.attr_features = {}
-
-        self.ans_list = []
+        # Filter entries based on the subset_fraction
+        if subset_fraction is not None and 0 < subset_fraction < 1:
+            num_samples = int(len(self.entries) * subset_fraction)
+            self.entries = self.entries[:num_samples]
 
         self.img_id2idx = cPickle.load(
             open(os.path.join(dataroot, '%s%s_imgid2idx.pkl' % (name, '' if self.adaptive else '36')), 'rb'))
 
-        # Load image feature
+        # Load image feature after subsampling
         h5_path = os.path.join(dataroot, '%s.hdf5' % name)
         print('loading features from h5 file %s ' % h5_path)
         with h5py.File(h5_path, 'r') as hf:
@@ -187,16 +181,14 @@ class GQAFeatureDataset(Dataset):
             self.spatials = np.array(hf.get('spatial_features'))
             self.pos_boxes = np.array(hf.get('pos_boxes'))
 
-        self.entries = _load_gqa_dataset(dataroot, args, name, self.img_id2idx)
         self.tokenize(self.question_len)
         self.stat_word_tokenize_1(args.num_stat_word)
         self.attr_word_tokenize(15)
         self.ans_tokenize()
         self.entity_tokenize()
         self.tensorize()
-        self.v_dim = self.features.size(1)
-        self.s_dim = self.spatials.size(1)
-
+        self.v_dim = self.features.shape[1]
+        self.s_dim = self.spatials.shape[1]
     def tokenize(self, max_length=14):
         """Tokenizes the questions.
 
