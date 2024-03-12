@@ -146,7 +146,7 @@ def _load_gqa_dataset(dataroot, args, name, img_id2val):
     return entries
 
 class GQAFeatureDataset(Dataset):
-    def __init__(self, args, name, dictionary, dataroot='data/gqa', adaptive=False):
+    def __init__(self, args, name, dictionary, dataroot='/kaggle/input/lxmert-gqa/gqa/', adaptive=False):
         super(GQAFeatureDataset, self).__init__()
         assert name in ['train', 'val', 'test-dev2015', 'test2015', 'test']
 
