@@ -35,7 +35,7 @@ pip install -r requirements.txt
 ```
 ### Dataset
 
-* **GQA dataset for VQA task** should be downloaded via [link](https://vision.aioz.io/f/c11580c0318846d1939c/?dl=1). The downloaded file should be extracted to `/kaggle/input/lxmert-gqa/gqa` directory. Note that, the data has been pre-process to content all corresponding visual and language features mentioned in our paper.
+* **GQA dataset for VQA task** should be downloaded via [link](https://vision.aioz.io/f/c11580c0318846d1939c/?dl=1). The downloaded file should be extracted to `/kaggle/input/lxmert-gqa/gqa/` directory. Note that, the data has been pre-process to content all corresponding visual and language features mentioned in our paper.
 
 ### Training
 Before training CRF models, please download the LXMERT pretrained model in [link](https://vision.aioz.io/f/2f6316d1b8794079b913/?dl=1) and move them to `pretrained/` directory.
