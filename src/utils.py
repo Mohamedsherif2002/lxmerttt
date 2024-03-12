@@ -16,7 +16,8 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch
-from six import string_classes
+import six
+string_classes = six.string_types
 import sys
 import csv
 import base64
